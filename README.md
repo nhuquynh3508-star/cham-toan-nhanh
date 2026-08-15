@@ -4,7 +4,7 @@
 
 ## Quyền riêng tư nhiều giáo viên
 
-- Mọi trang sử dụng đều yêu cầu đăng nhập ChatGPT.
+- Màn hình đầu hướng dẫn giáo viên đăng nhập bằng Gmail/Google qua cổng xác thực ChatGPT.
 - API không tin dữ liệu nhận từ trình duyệt để xác định chủ sở hữu.
 - Mỗi dòng điểm được gắn với khóa SHA-256 tạo phía máy chủ từ tài khoản đăng nhập.
 - Mọi truy vấn đọc, ghi và cập nhật đều bị giới hạn theo khóa giáo viên.

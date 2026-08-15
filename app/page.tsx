@@ -20,6 +20,7 @@ import {
   Shapes,
   LoaderCircle,
   LogOut,
+  Mail,
   PenLine,
   RotateCcw,
   Save,
@@ -161,7 +162,8 @@ export default function Home() {
   const [installPrompt, setInstallPrompt] = useState<InstallPromptEvent | null>(null);
   const [showInstallHelp, setShowInstallHelp] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
-  const [teacherName, setTeacherName] = useState("Tài khoản giáo viên");
+  const [teacherName, setTeacherName] = useState<string | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -200,7 +202,10 @@ export default function Home() {
       .then((profile) => {
         if (active && profile?.displayName) setTeacherName(profile.displayName);
       })
-      .catch(() => undefined);
+      .catch(() => undefined)
+      .finally(() => {
+        if (active) setAuthReady(true);
+      });
     return () => {
       active = false;
     };
@@ -364,7 +369,7 @@ export default function Home() {
       const output = await worker.recognize(file);
       await worker.terminate();
       const text = output.data.text.trim();
-      setOcrText(text || "Máy chưa đọc rõ. Cô có thể sửa lại phần văn bản này.");
+      setOcrText(text || "Máy chưa đọc rõ. Giáo viên có thể sửa lại phần văn bản này.");
       const xMatch = text.match(/x\s*[=:]\s*(-?\d+(?:[.,]\d+)?)/i);
       const arithmeticMatch = text.match(/\(?\s*24\s*[-–]\s*4\s*\)?\s*[:/]\s*2\s*[=:]\s*10/i);
       setDetectedLatex(
@@ -528,6 +533,41 @@ export default function Home() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  if (!authReady) {
+    return (
+      <main className="auth-screen">
+        <LoaderCircle className="spin" size={28} />
+        <p>Đang kiểm tra đăng nhập…</p>
+      </main>
+    );
+  }
+
+  if (!teacherName) {
+    return (
+      <main className="auth-screen">
+        <section className="auth-card">
+          <span className="auth-brand-mark" aria-hidden="true">
+            <ScanLine size={28} strokeWidth={2.4} />
+          </span>
+          <span className="eyebrow">CHẤM TOÁN NHANH</span>
+          <h1>Đăng nhập bằng Gmail</h1>
+          <p>
+            Sử dụng tài khoản Google/Gmail để mỗi giáo viên có một sổ điểm riêng,
+            không nhìn thấy dữ liệu của người khác.
+          </p>
+          <a className="auth-google-button" href="/signin-with-chatgpt?return_to=%2F">
+            <Mail size={19} />
+            Tiếp tục bằng Gmail
+          </a>
+          <small>
+            Ở bước tiếp theo, chọn <strong>Continue with Google</strong>. Việc xác thực
+            được bảo vệ qua ChatGPT; ứng dụng không nhận hoặc lưu mật khẩu Gmail.
+          </small>
+        </section>
+      </main>
+    );
+  }
+
   return (
     <main className="app-shell">
       <header className="topbar">
@@ -630,7 +670,7 @@ export default function Home() {
               <div className="page-heading">
                 <div>
                   <span className="eyebrow">BƯỚC 1 / 4</span>
-                  <h1>Dạy máy cách cô chấm.</h1>
+                  <h1>Dạy máy cách giáo viên chấm.</h1>
                   <p>Nhập đáp án mẫu hoặc các mốc điểm. Barem được giữ trên thiết bị này.</p>
                 </div>
                 <button className="button secondary save-button" onClick={saveRubric}>
@@ -878,7 +918,7 @@ export default function Home() {
                     <span className="ai-icon"><Sparkles size={19} /></span>
                     <div>
                       <h2>Phần máy đọc</h2>
-                      <p>Cô có thể sửa trước khi chấm.</p>
+                      <p>Giáo viên có thể sửa trước khi chấm.</p>
                     </div>
                     {confidence > 0 && <span className="confidence">Tin cậy {confidence}%</span>}
                   </div>
@@ -947,7 +987,7 @@ export default function Home() {
               <div className="page-heading result-heading">
                 <div>
                   <span className="eyebrow">BƯỚC 3 / 4</span>
-                  <h1>Máy đề xuất, cô quyết định.</h1>
+                  <h1>Máy đề xuất, giáo viên quyết định.</h1>
                   <p>Đối chiếu điểm theo từng mốc và xem cảnh báo trước khi xác nhận.</p>
                 </div>
                 <button className="button secondary" onClick={() => setStep(2)}>
@@ -1024,7 +1064,7 @@ export default function Home() {
                     <span className="alert-kicker">PHÁT HIỆN CÁCH GIẢI KHÁC</span>
                     <h2>Kết quả đúng, đường giải không giống bài mẫu.</h2>
                     <p>
-                      Máy xác nhận <Formula latex={detectedLatex} /> cho giá trị 10 và bài có kết luận 10, 14. Tuy nhiên học sinh dùng công thức tổng–hiệu trực tiếp, nên bài được chuyển cho cô duyệt thay vì tự động chốt điểm.
+                      Máy xác nhận <Formula latex={detectedLatex} /> cho giá trị 10 và bài có kết luận 10, 14. Tuy nhiên học sinh dùng công thức tổng–hiệu trực tiếp, nên bài được chuyển cho giáo viên duyệt thay vì tự động chốt điểm.
                     </p>
                   </div>
                   <button
@@ -1110,7 +1150,7 @@ export default function Home() {
                   <span className="eyebrow">BƯỚC 4 / 4</span>
                   <h1>Sổ kết quả và lỗ hổng kiến thức.</h1>
                   <p>
-                    Mỗi học sinh là một dòng. Điểm từng câu được tổng hợp để cô nhận ra nội dung cả lớp còn vướng.
+                    Mỗi học sinh là một dòng. Điểm từng câu được tổng hợp để giáo viên nhận ra nội dung cả lớp còn vướng.
                   </p>
                 </div>
                 <div className="sheet-actions">

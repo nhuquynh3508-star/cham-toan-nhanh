@@ -2,9 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Be_Vietnam_Pro, Lora } from "next/font/google";
 import "katex/dist/katex.min.css";
 import "./globals.css";
-import { requireChatGPTUser } from "./chatgpt-auth";
-
-export const dynamic = "force-dynamic";
 
 const sans = Be_Vietnam_Pro({
   variable: "--font-sans",
@@ -48,9 +45,7 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  await requireChatGPTUser("/");
-
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="vi">
       <body className={`${sans.variable} ${serif.variable}`}>{children}</body>
