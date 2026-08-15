@@ -1,0 +1,27 @@
+{
+  "name": "Chấm Toán Nhanh",
+  "short_name": "Chấm Toán",
+  "description": "Chấm bài Toán tự luận trên giấy và theo dõi kết quả học sinh.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f4faff",
+  "theme_color": "#1687e8",
+  "lang": "vi",
+  "categories": ["education", "productivity"],
+  "icons": [
+    {
+      "src": "/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

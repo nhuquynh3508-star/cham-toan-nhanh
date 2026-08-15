@@ -1,0 +1,2 @@
+ALTER TABLE `grading_results` ADD `owner_key` text DEFAULT '3d3078b9b320490d39c975c092db449d701a9207cc5d13163895ca6ed955624d' NOT NULL;--> statement-breakpoint
+CREATE INDEX `grading_results_owner_assessment_idx` ON `grading_results` (`owner_key`,`assessment_title`);
